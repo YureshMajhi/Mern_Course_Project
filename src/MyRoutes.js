@@ -4,17 +4,19 @@ import Layouts from "./components/Layouts";
 import HomePage from "./pages/HomePage";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
-import Cart from "./components/Cart";
+import Cart from "./pages/Cart";
+import Register from "./pages/Register";
 
 const MyRoutes = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Layouts />}>
-          <Route path="/products" element={<Products />} />
+          <Route path="products" element={<Products />} />
           <Route index element={<HomePage />} />
           <Route path="productdetails/:productId" element={<ProductDetail />} />
-          <Route path="/cart" element={<Cart />} />
+          <Route path="cart" element={<Cart />} />
+          <Route path="register" element={<Register />} />
         </Route>
       </Routes>
     </Router>

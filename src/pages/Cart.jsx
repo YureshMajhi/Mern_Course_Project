@@ -5,39 +5,51 @@ import "react-toastify/dist/ReactToastify.css";
 import { FaTrash } from "react-icons/fa";
 
 const Cart = () => {
-  /* const [localItems, setLocalItems] = useState(() => {
-    const localValue = localStorage.getItem("myCart");
-
-    if (localValue) return JSON.parse(localValue);
-
-    return [];
-  });
-
-  const deleteLocalItem = () => {
-    localStorage.removeItem("myCart");
-    setLocalItems([]);
-  }; */
-
   const [products, setProducts] = useState([]);
   useEffect(() => {
     const cartData = JSON.parse(localStorage.getItem("myCart"));
     setProducts(cartData);
   }, []);
 
+  // increase or decreaase quantity
+  const increaseQty = (id) => {
+    const updateProduct = products.map((item) => {
+      if (item.id === id) {
+        return { ...item, quantity: item.quantity + 1 };
+      }
+      return item;
+    });
+    setProducts(updateProduct);
+    localStorage.setItem("myCart", JSON.stringify(updateProduct));
+  };
+  const decreaseQty = (id) => {
+    const updateProduct = products.map((item) => {
+      if (item.id === id && item.quantity > 1) {
+        return { ...item, quantity: item.quantity - 1 };
+      }
+      return item;
+    });
+    setProducts(updateProduct);
+    localStorage.setItem("myCart", JSON.stringify(updateProduct));
+  };
+
+  // Delete an item
+  const removeCartHandler = (id, title) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${title.slice(0, 15)}... from the cart`
+    );
+    if (confirmed) {
+      const filterCart = products.filter((item) => {
+        return item.id !== id;
+      });
+      localStorage.setItem("myCart", JSON.stringify(filterCart));
+      setProducts(filterCart);
+      toast.success(`${title} is removed from the cart`);
+    }
+  };
+
   return (
     <>
-      {/* <div className="container-fluid mt-4">
-        <div className="row row-cols-1 row-cols-md-4 g-4">
-          {localItems && localItems.map((items) => <Card data={items} />)}
-        </div>
-      </div>
-      <div className="row d-flex justify-content-center my-5">
-        <div className="col-md-4">
-          <button className=" btn btn-warning" onClick={deleteLocalItem}>
-            Clear Cart
-          </button>
-        </div>
-      </div> */}
       <ToastContainer theme="colored" position="top-center" />
       <div className="container">
         <div className="row d-flex justify-content-between my-4">
@@ -61,14 +73,27 @@ const Cart = () => {
                         <span>${item.price}</span>
                       </div>
                       <div className="col-3">
-                        <button className="btn btn-danger">-</button>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => decreaseQty(item.id)}
+                        >
+                          -
+                        </button>
                         &nbsp;
                         <span>{item.quantity}</span>
                         &nbsp;
-                        <button className="btn btn-primary">+</button>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => increaseQty(item.id)}
+                        >
+                          +
+                        </button>
                       </div>
                       <div className="col-1">
-                        <button className="btn btn-danger">
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => removeCartHandler(item.id, item.title)}
+                        >
                           <FaTrash />
                         </button>
                       </div>
@@ -81,7 +106,7 @@ const Cart = () => {
                   <h5>Cart Summary</h5>
                   <hr />
                   <p>
-                    <strong>Units: </strong>{" "}
+                    <strong>Units: </strong>
                     {products.reduce(
                       (ac, item) => ac + Number(item.quantity),
                       0
